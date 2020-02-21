@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "334705934269",
+    "firebase_url": "https://golak-3a756.firebaseio.com",
+    "project_id": "golak-3a756",
+    "storage_bucket": "golak-3a756.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334705934269:android:eb49c93ee24e5466e75cd4",
+        "android_client_info": {
+          "package_name": "com.example.golak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334705934269-p0tii6uuvakv79ekddk9eu4hv44829gj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHS46ql_U8TdecjwxhQe6xITz1d-YPekk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334705934269-p0tii6uuvakv79ekddk9eu4hv44829gj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "334705934269-l9debrg3uhaud8taktlfgrlot4miuidr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.golak.mobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
