@@ -1,4 +1,4 @@
 bool isDev = false;
 final baseUrl = isDev
-    ? 'http://golack-circle.herokuapp.com' // local
-    : 'http://golack-circle.herokuapp.com'; // remote
+    ? 'https://golak-circles.herokuapp.com' // local
+    : 'https://golak-circles.herokuapp.com'; // remote

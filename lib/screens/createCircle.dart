@@ -220,6 +220,78 @@ class _CreateCirclePageState extends State<CreateCirclePage> {
                       value: '12',
                       text: '12',
                     ),
+                    Option(
+                      value: '13',
+                      text: '13',
+                    ),
+                    Option(
+                      value: '14',
+                      text: '14',
+                    ),
+                    Option(
+                      value: '15',
+                      text: '15',
+                    ),
+                    Option(
+                      value: '16',
+                      text: '16',
+                    ),
+                    Option(
+                      value: '17',
+                      text: '17',
+                    ),
+                    Option(
+                      value: '18',
+                      text: '18',
+                    ),
+                    Option(
+                      value: '19',
+                      text: '19',
+                    ),
+                    Option(
+                      value: '20',
+                      text: '20',
+                    ),
+                    Option(
+                      value: '21',
+                      text: '21',
+                    ),
+                    Option(
+                      value: '22',
+                      text: '22',
+                    ),
+                    Option(
+                      value: '23',
+                      text: '23',
+                    ),
+                    Option(
+                      value: '24',
+                      text: '24',
+                    ),
+                    Option(
+                      value: '25',
+                      text: '25',
+                    ),
+                    Option(
+                      value: '26',
+                      text: '26',
+                    ),
+                    Option(
+                      value: '27',
+                      text: '27',
+                    ),
+                    Option(
+                      value: '28',
+                      text: '28',
+                    ),
+                    Option(
+                      value: '29',
+                      text: '29',
+                    ),
+                    Option(
+                      value: '30',
+                      text: '30',
+                    ),
                   ],
                 ),
                 SizedBox(height: 8),
@@ -339,6 +411,7 @@ class _RichDatePickerState extends State<RichDatePicker> {
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime now = DateTime.now();
     final DateTime max = DateTime(now.year + 1, now.month, now.day);
+    final DateTime min = DateTime(now.year - 1, now.month, now.day);
     final DateTime picked = await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -358,8 +431,8 @@ class _RichDatePickerState extends State<RichDatePicker> {
                         setState(() {});
                       },
                       mode: CupertinoDatePickerMode.date,
-                      initialDateTime: selectedDate,
-                      minimumDate: now,
+                      //initialDateTime: selectedDate,
+                      minimumDate: min,
                       maximumDate: max,
                     ),
                   ),

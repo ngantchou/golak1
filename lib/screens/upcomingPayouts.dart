@@ -46,7 +46,7 @@ class UpcomingPayouts extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: RichCard(
                   title: payout.circleName,
-                  subTitle: payout.upcomingDate.toString().split(' ').first,
+                  subTitle: DateTime.parse(payout.upcomingDate.toString().split(' ').first).toString(),
                   trailing: payout.amount.toString(),
                 ),
               ),

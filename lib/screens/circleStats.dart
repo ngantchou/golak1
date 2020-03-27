@@ -16,6 +16,7 @@ class CircleStatsPage extends StatelessWidget {
     final i18nNotifier = Provider.of<I18nNotifier>(context);
 
     final Circle circle = ModalRoute.of(context).settings.arguments;
+    String end_date = null ;
 
     final circleStats = [
       {
@@ -46,10 +47,7 @@ class CircleStatsPage extends StatelessWidget {
       {
         'title': FlutterI18n.translate(context, "end_date"),
         'image': 'images/start-date@3x.png',
-        'value':
-            circle.currentRound != null && circle.currentRound.endDate != null
-                ? '${circle.currentRound.endDate.toString().split(' ').first}'
-                : 'unavailable',
+        'value': getEndDate(circle),
       },
     ];
     return Scaffold(
@@ -93,5 +91,17 @@ class CircleStatsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+  String getEndDate(Circle circle){
+    String end_date = "Unavailable";
+    print(circle.contribType);
+    switch(circle.contribType){
+      case "monthly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day).toString().split(' ').first;break;
+      case "daily" :return end_date = DateTime(circle.startDate.year, circle.startDate.month, circle.startDate.day +circle.involvedUsers.length).toString().split(' ').first;break;
+      case "bi-weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 3*circle.involvedUsers.length).toString().split(' ').first;break;
+      case "weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 7*circle.involvedUsers.length).toString().split(' ').first;break;
+      default :end_date = "Unavailable";
+    }
+    return end_date;
   }
 }

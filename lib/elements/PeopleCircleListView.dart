@@ -1,12 +1,13 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:golak/models/circle.dart';
 import 'package:golak/models/user.dart';
 
-class PeopleCircle extends StatelessWidget {
-  PeopleCircle({
+class PeopleCircleListView extends StatelessWidget {
+  PeopleCircleListView({
     Key key,
     @required this.circle,
   });
@@ -26,8 +27,8 @@ class PeopleCircle extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
             ),
-            child: Stack(
-              fit: StackFit.loose,
+            child: ListView(
+
               children: <Widget>[
                 Align(
                   alignment: Alignment.center,
@@ -53,7 +54,7 @@ class PeopleCircle extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${(circle.minContrib*circle.involvedUsers.length) ?? '0'} USD',
+                            '${circle.minContrib*circle.involvedUsers.length ?? '0'} USD',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 12,
@@ -84,58 +85,60 @@ class PeopleCircle extends StatelessWidget {
                 ...circle.involvedUsers.asMap().map((index, involvedUser) {
                   return MapEntry(
                     index,
-                    Positioned(
-                      top: _phoneWidth / 2 - 35,
-                      left: _phoneWidth / 2 - 35,
-                      child: Transform.translate(
-                        offset: Offset.fromDirection(
-                          baseAngle * index,
-                          _phoneWidth / 2 - 35,
-                        ),
+                    ListTile(
+
+                      title: Container(
+
                         child: InkWell(
-                          onTap: () =>
-                              Navigator.of(context).pushNamed('/others-profile',
-                                  arguments: User(
-                                    id: involvedUser['id'],
-                                    username: involvedUser['name'],
-                                    email: involvedUser['email'],
-                                    phone: involvedUser['mobile'],
-                                    country: involvedUser['country'],
-                                    image: involvedUser['picture'],
-                                  )),
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    width: 2,
-                                    color: Color(0xFF76D0B7),
-                                  ),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage(
-                                      'images/person.jpg',
+                            onTap: () =>
+                                Navigator.of(context).pushNamed('/others-profile',
+                                    arguments: User(
+                                      id: involvedUser['id'],
+                                      username: involvedUser['name'],
+                                      email: involvedUser['email'],
+                                      phone: involvedUser['mobile'],
+                                      country: involvedUser['country'],
+                                      image: involvedUser['picture'],
+                                    )),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Color(0xFF76D0B7),
+                                    ),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: AssetImage(
+                                        'images/person.jpg',
+                                      ),
                                     ),
                                   ),
+                                  height: 70,
+                                  width: 70,
+                                  child: ClipOval(
+                                    child: involvedUser['picture'] != null &&
+                                        involvedUser['picture'] != ''
+                                        ? Image.network(
+                                      involvedUser['picture'],
+                                      fit: BoxFit.cover,
+                                    )
+                                        : Container(),
+                                  ),
                                 ),
-                                height: 70,
-                                width: 70,
-                                child: ClipOval(
-                                  child: involvedUser['picture'] != null &&
-                                      involvedUser['picture'] != ''
-                                      ? Image.network(
-                                    involvedUser['picture'],
-                                    fit: BoxFit.cover,
-                                  )
-                                      : Container(),
-                                ),
-                              ),
-                              Text(involvedUser['name'])
-                            ],
-                          )
+
+                              ],
+                            )
                         ),
+                      ),
+                      subtitle: Text(involvedUser['name']),
+                      trailing: Container(
+                        child: Text('Rank Order: ${index+1}' ),
                       ),
                     ),
                   );

@@ -32,7 +32,7 @@ class CircleManagerPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SectionTitle(
               text:
-                  '${FlutterI18n.translate(context, "previous_round")}${circle?.currentRound?.startDate != null ? ':  ' + circle?.currentRound?.startDate?.toString()?.split(' ')?.first : ''}',
+                  '${FlutterI18n.translate(context, "current_round")}${circle?.currentRound?.startDate != null ? ':  ' + circle?.currentRound?.startDate?.toString()?.split(' ')?.first : ''}',
             ),
           ),
           SizedBox(height: 8 * 2.0),

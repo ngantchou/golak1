@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:golak/models/circle.dart';
+import 'package:golak/models/user.dart';
 import 'package:golak/network/circles.dart' as circlesNetwork;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,6 +83,7 @@ class CirclesNotifier with ChangeNotifier {
       accessToken: accessToken,
       userId: userId,
     );
+
   }
 
   Future<String> getCircles({@required accessToken, @required userId}) async {
@@ -117,7 +119,45 @@ class CirclesNotifier with ChangeNotifier {
       return null;
     }
   }
-
+  Future<String> addParticipant({ accessToken, involvedUsers,  circleId}) async {
+    loading = true;
+    var $response;
+    try{
+      $response = await circlesNetwork.addParticipant (
+          accessToken: accessToken,
+          involvedUsers: involvedUsers,
+          circleId: circleId
+      );
+      return $response.toString() ;
+    }catch(e){
+      print('$e');
+    }
+  }
+  Future<List<User>> getUserpaid(
+      {@required accessToken, @required circleId}) async {
+    // loading = true;
+    var $response;
+    try {
+      $response = await circlesNetwork.getUserpaid(
+        accessToken: accessToken,
+        circleId: circleId,
+      );
+    } catch (e) {}
+    if ($response != null) {
+      print("user paid: ${$response['rows']}");
+      List<dynamic> jsonLedgerRows = $response['rows'];
+      final List<User> $ledger = jsonLedgerRows.map((ledger) {
+        return User.fromJson(ledger);
+      }).toList();
+      List<User> _ledger = [];
+      if ($ledger.length > 0) _ledger = $ledger.reversed.toList();
+      // loading = false;
+      return _ledger;
+    } else {
+      // loading = false;
+      return null;
+    }
+  }
   Future<String> deleteRoundCircles({@required accessToken, @required phone,@required userId, @required email, @required circleId }) async {
     loading = true;
     var $response;

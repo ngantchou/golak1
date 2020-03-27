@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:golak/arguments/orderPeopleArguments.dart';
+import 'package:golak/elements/golakIcons.dart';
 import 'package:golak/elements/header.dart';
 import 'package:golak/elements/notchedBottomAppBar.dart';
 import 'package:golak/elements/notchedFAB.dart';
@@ -24,6 +25,7 @@ class OrderPeoplePage extends StatefulWidget {
 
 class _OrderPeoplePageState extends State<OrderPeoplePage> {
   final List<int> _orders = [];
+  bool _paid = false;
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
         .toList();
     for (final _order in _filtredOrders) {
       _users.add({
+        'isPay': arguments.isPay[_order],
         'name': arguments.names[_order],
         'email': arguments.emails[_order],
         'phone': arguments.phones[_order],
@@ -117,6 +120,7 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                             'name': _users[_index]['name'],
                             'email': _users[_index]['email'],
                             "order": _index + 1,
+                            "isPay":_users[_index]['isPay'],
                           });
                         }
 
@@ -152,13 +156,44 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                               'name': _users[_index]['name'],
                               'email': _users[_index]['email'],
                               "order": _index + 1,
+                              "isPay":_users[_index]['isPay'],
                             });
                           }
                           //todo ajouter le code pour l'invitation d'un membre;
-                          Navigator.of(context).pushNamed(
-                            '/dashboard',
-                            arguments: arguments.circle,
+                          final $addPartCircle = await circlesNotifier.addParticipant (
+                              accessToken: _accessToken,
+                              involvedUsers: arguments.circle.involvedUsers,
+                              circleId: arguments.circle.id
                           );
+                          if ($addPartCircle != null) {
+                            for (final _index in _users
+                                .asMap()
+                                .keys) {
+                              arguments.circle.involvedUsers.add({
+                                'name': _users[_index]['name'],
+                                'email': _users[_index]['email'],
+                                "order": _index + 1,
+                              });
+                            }
+                            Navigator.of(context).pushNamed(
+                              '/dashboard',
+                              arguments: arguments.circle,
+                            );
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return StyledAlertDialog(
+                                    label: 'OK',
+                                    title: 'Échec de la connexion',
+                                    content: '',
+                                    cancel: false,
+                                    callback: () async {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                });
+                          }
                         }
 
                       },
@@ -182,7 +217,7 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                   key: ValueKey(_users[index]['email']),
                   title: Text('${_users[index]['name']}'.toUpperCase()),
                   subtitle: Container(
-                    height: 125,
+                    height: 131,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -216,11 +251,38 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                             ),
                           ],
                         ),
+
+                        Container(height: 2,color: Colors.white70,)
                       ],
                     ),
                   ),
                   trailing: Icon(Icons.reorder),
                 ),
+                /*ListTile(
+                  key: ValueKey(_users[index]['email']),
+                  title: RaisedButton(
+                      onPressed: (){
+
+                      },
+                      child: Text("Received Payout ?"),
+                  ),
+                  trailing: Row(
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: (){
+
+                        },
+                        child: Text("Yes"),
+                      ),
+                      RaisedButton(
+                        onPressed: (){
+
+                        },
+                        child: Text("No"),
+                      ),
+                    ],
+                  ),
+                )*/
             ],
           ),
           if (Provider.of<CirclesNotifier>(context).loading) StyledLoader(),

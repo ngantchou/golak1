@@ -5,6 +5,7 @@ import 'package:golak/elements/richHeader.dart';
 import 'package:golak/elements/sectionTitle.dart';
 import 'package:golak/store/notifiers/i18nNotifier.dart';
 import 'package:golak/store/notifiers/notificationsNotifier.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:golak/models/notification.dart' as model;
 
@@ -15,7 +16,7 @@ class NotificationsPage extends StatelessWidget {
     final List<model.Notification> _notifications =
         notificationsNotifier.notifications;
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-
+    final df = new DateFormat('MM-dd-yyyy');
     return ListView(
       padding: EdgeInsets.all(0),
       children: <Widget>[

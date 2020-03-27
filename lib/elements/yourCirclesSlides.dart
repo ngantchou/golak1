@@ -229,7 +229,7 @@ class YourCirclesSlides extends StatelessWidget {
                               ...circle.involvedUsers
                                   .asMap()
                                   .map((index, involveduser) {
-                                return MapEntry(
+                                return index<3?MapEntry(
                                   index,
                                   Positioned(
                                     top: 0,
@@ -266,14 +266,16 @@ class YourCirclesSlides extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                );
+                                ):MapEntry(
+                                    index,
+                                    Container());
                               }).values
                             ],
                           ),
                         ),
                         SizedBox(width: 16),
                         Text(
-                          '+${circle.involvedUsers.length} ${FlutterI18n.translate(context, 'member')}',
+                          '+${circle.involvedUsers.length-3} ${FlutterI18n.translate(context, 'member')}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14,

@@ -24,13 +24,14 @@ class _InvitePeoplePageState extends State<InvitePeoplePage> {
   List<TextEditingController> _nameControllers = [];
   List<TextEditingController> _emailControllers = [];
   List<TextEditingController> _phoneControllers = [];
+  List<bool> _ispay = [];
 
 
   @override
   void initState() {
     super.initState();
 
-    for (final _ in List(12)) {
+    for (final _ in List(30)) {
       _nameControllers.add(
         TextEditingController(),
       );
@@ -40,6 +41,7 @@ class _InvitePeoplePageState extends State<InvitePeoplePage> {
       _phoneControllers.add(
         TextEditingController(),
       );
+      _ispay.add(false);
     }
     setState(() {});
   }
@@ -122,6 +124,45 @@ class _InvitePeoplePageState extends State<InvitePeoplePage> {
                         icon: GolakIcons.phone,
                         validated: validated,
                         validator: _phoneValidator,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                              '${FlutterI18n.translate(context, "Received Payout ?")}: '.toUpperCase()),
+                          Container(
+                            width: 111.5,
+                            height: 32.1,
+                            child: FlatButton(
+                              color: _ispay[index] ? Color(0xFF76D0B7) : Color(0xFFB8B8B8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              onPressed: () async {
+                                _ispay[index] = !_ispay[index];
+                                setState(() {});
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  GolakIcon(
+                                    _ispay[index] ? GolakIcons.checkCircleThin : GolakIcons.delete,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    FlutterI18n.translate(context, _ispay[index]? "paid" : 'not_paid'),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 32),
                       if (index + 1 != arguments.numberOfPeople) ...[
@@ -210,6 +251,10 @@ class _InvitePeoplePageState extends State<InvitePeoplePage> {
                           .sublist(0, _numberOfPeople)
                           .map((TextEditingController _c) => _c.text)
                           .toList();
+                      final List<bool> _isPay = _ispay
+                          .sublist(0, _numberOfPeople)
+                          .map((bool _c) => _c)
+                          .toList();
                       Navigator.of(context).pushNamed(
                         '/order-people',
                         arguments: OrderPeopleArguments(
@@ -221,7 +266,10 @@ class _InvitePeoplePageState extends State<InvitePeoplePage> {
                               : _emails,
                           phones: arguments.participate
                               ? [..._phones, _user.phone]
-                              : _phones,
+                              :_phones,
+                          isPay: arguments.participate
+                          ? [..._isPay, _user.isPay]
+                              : _isPay,
                           randomSlots: arguments.randomSlots,
                           circle :arguments.circle,
                         ),

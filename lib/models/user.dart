@@ -5,6 +5,7 @@ class User {
   final String phone;
   final String country;
   final String image;
+  final bool isPay;
 
   const User({
     this.id,
@@ -13,6 +14,7 @@ class User {
     this.phone,
     this.country,
     this.image,
+    this.isPay,
   });
 
   User.fromJson(Map<String, dynamic> json)
@@ -21,7 +23,8 @@ class User {
         phone = json['phone'],
         country = json['country'],
         image = json['image'],
-        id = json['id'];
+        isPay = json['ispay'],
+        id = json['_id'];
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -30,5 +33,6 @@ class User {
         'phone': phone,
         'country': country,
         'image': image,
+        'ispay': isPay,
       };
 }

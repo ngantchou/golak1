@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:golak/elements/golakIcons.dart';
 import 'package:golak/store/notifiers/flowNotifier.dart';
+import 'package:golak/store/notifiers/notificationsNotifier.dart';
 import 'package:provider/provider.dart';
+import 'package:golak/models/notification.dart' as model;
 
 class NotchedBottomAppBar extends StatelessWidget {
   const NotchedBottomAppBar({
@@ -19,7 +21,9 @@ class NotchedBottomAppBar extends StatelessWidget {
     final flowNotifier = Provider.of<FlowNotifier>(context);
     final _animateToPage = flowNotifier.animateToPage;
     final _page = flowNotifier.currentPage;
-
+    final notificationsNotifier = Provider.of<NotificationsNotifier>(context);
+    final List<model.Notification> _notifications =
+        notificationsNotifier.notifications;
     return BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 8.0,
@@ -58,13 +62,38 @@ class NotchedBottomAppBar extends StatelessWidget {
                   );
                 _animateToPage(1);
               },
-              child: Padding(
+              child: Container(
+                width: 30,
+                height: 30,
+                child: Stack(
+                  children: [
+                    GolakIcon(
+                      GolakIcons.reminders,
+                      color: _page == 1.0 ? Color(0xFF76D0B7) : Color(0xFFA5A4AA),
+                    ),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      alignment: Alignment.topRight,
+                      margin: EdgeInsets.only(top: 5),
+                      child: _notifications.length >0 ?Container(
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.green,
+                            border: Border.all(color: Colors.white, width: 1)),
+                      ):Container(),
+                    ),
+                  ],
+                ),
+              ),/*Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GolakIcon(
                   GolakIcons.reminders,
                   color: _page == 1.0 ? Color(0xFF76D0B7) : Color(0xFFA5A4AA),
                 ),
-              ),
+              ),*/
             ),
             InkWell(
               onTap: () {

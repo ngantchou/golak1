@@ -13,7 +13,7 @@ class Payout {
 
   Payout.fromJson(Map<String, dynamic> json)
       : circleName = json['circleName'],
-        amount = double.parse(json['amount'].toString()),
+        amount = json['amount'].toString()==null?0:json['amount'].toDouble(),
         upcomingDate = DateTime.parse(json['upcoming_date']);
 
   Map<String, dynamic> toJson() => {

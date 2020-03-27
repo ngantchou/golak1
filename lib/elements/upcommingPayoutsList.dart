@@ -23,7 +23,7 @@ class UpcomingPayoutsCards extends StatelessWidget {
           for (final payment
               in _payouts.sublist(0, min(_payouts.length, 5))) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: RichCard(
                 title: payment.circleName,
                 subTitle: payment.upcomingDate.toString().split(' ').first,

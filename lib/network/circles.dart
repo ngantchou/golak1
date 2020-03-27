@@ -65,6 +65,34 @@ createCircle({
     ''');
   }
 }
+addParticipant({
+  String accessToken,
+  List involvedUsers,
+  String circleId,
+}) async {
+  final url = '$baseUrl/circles/$circleId';
+  print('add participant: $baseUrl/circles/$circleId');
+  final response = await put(
+    Uri.parse(url),
+    headers: {
+      "Accept": "application/json",
+      "Authorization": 'Bearer $accessToken',
+    },
+    body: {
+      'involved_users': json.encode(involvedUsers),
+    },
+    encoding: Encoding.getByName("utf-8"),
+  );
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    print('''
+    \n----->Error@addParticipantCirlce:
+    \n----->statusCode: ${response.statusCode}
+    \n----->body: ${response.body}
+    ''');
+  }
+}
 deleteRoundCircle({
   String accessToken,
   String circleId,
@@ -94,5 +122,29 @@ deleteRoundCircle({
       \n----->statusCode: ${response.statusCode}
       \n----->body: ${response.body}
       ''');
+  }
+
+}
+getUserpaid({
+  String accessToken,
+  String circleId,
+}) async {
+  final url = '$baseUrl/circles/$circleId/userpaid';
+  final response = await get(
+    Uri.parse(url),
+    headers: {
+      "Accept": "application/json",
+      "Authorization": 'Bearer $accessToken',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    print('''
+    \n----->Error@ledger:
+    \n----->statusCode: ${response.statusCode}
+    \n----->body: ${response.body}
+    ''');
   }
 }

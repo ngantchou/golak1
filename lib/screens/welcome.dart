@@ -23,8 +23,8 @@ class _WelcomePageState extends State<WelcomePage> {
     final _phoneHeight = MediaQuery.of(context).size.height;
     final authenticationNotifier = Provider.of<AuthenticationNotifier>(context);
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-
-    if (!navigated &&
+    print(authenticationNotifier.accessToken );
+   /* if (!navigated &&
         authenticationNotifier.accessToken != null &&
         authenticationNotifier.user != null)
       Timer.run(() {
@@ -43,7 +43,15 @@ class _WelcomePageState extends State<WelcomePage> {
           isLangInitialized = true;
         });
       });
-    }
+
+    }*/
+    Timer.run(() {
+      i18nNotifier.changeLanguage(context, null);
+      setState(() {
+        isLangInitialized = true;
+      });
+    });
+
     return Scaffold(
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 25),
