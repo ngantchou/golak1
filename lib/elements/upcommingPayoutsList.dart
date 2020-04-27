@@ -99,7 +99,7 @@ class UpcomingPayoutsCards extends StatelessWidget {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  FlutterI18n.translate(context, "recieve-on"),
+                                  FlutterI18n.translate(context, "recieve on"),
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,

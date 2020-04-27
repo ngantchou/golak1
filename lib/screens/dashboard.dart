@@ -6,6 +6,7 @@ import 'package:golak/elements/PeopleCircleListView.dart';
 import 'package:golak/elements/golakIcons.dart';
 import 'package:golak/elements/notchedBottomAppBar.dart';
 import 'package:golak/elements/notchedFAB.dart';
+import 'package:golak/elements/payment.dart';
 import 'package:golak/elements/peopleCircle.dart';
 import 'package:golak/elements/richHeader.dart';
 import 'package:golak/elements/roundedButton.dart';
@@ -36,7 +37,7 @@ class DashboardPage extends StatelessWidget {
       case "bi-weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 3*circle.users.length).toString().split(' ').first;break;
       case "weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 7*circle.users.length).toString().split(' ').first;break;
     }
-
+    int i =0;
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: NotchedFAB(),
@@ -73,18 +74,167 @@ class DashboardPage extends StatelessWidget {
             child: Text('End date : ${ DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day).toString().split(' ').first}',
             ),
           ),
-
+          circle.users.length>3?Align(
+            alignment: Alignment.center,
+            child: Container(
+              width: 108.01,
+              height: 108.01,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFF76D0B7),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  if (circle.currentRound != null &&
+                      circle.currentRound.startDate != null) ...[
+                    Text(
+                      FlutterI18n.translate(context, "pot_amount"),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      '${circle.minContrib*circle.users.length ?? '0'} USD',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      '${FlutterI18n.translate(context, "starts_on")} \n${circle.currentRound?.startDate?.toString()?.split(' ')?.first ?? ''}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 7,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ] else
+                    Text(
+                      'Information not available',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: Colors.white,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ):Container(),
+          if(circle.users.length<=3)
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 32,
               vertical: 16,
             ),
-            child: circle.users.length<=3?PeopleCircle(
+            child: PeopleCircle(
               circle: circle,
-            ):PeopleCircleListView(
-              circle: circle,
-            ),
-          ),
+            )
+          )
+          else
+          ...circle.users.map((user) {
+           i++;
+            final _paid = circle.currentRound != null &&
+                circle.currentRound.paymentsDoneDetails != null &&
+                circle.currentRound.paymentsDoneDetails.where((payment) {
+                  return payment['from_user'] == user.id;
+                }).length >
+                    0;
+           return Container(
+             padding: EdgeInsets.symmetric(vertical: 8),
+             decoration: BoxDecoration(
+               color: Colors.white,
+               borderRadius: BorderRadius.circular(12),
+               boxShadow: [
+                 BoxShadow(
+                   blurRadius: 10,
+                   offset: Offset(0, 4),
+                   color: Colors.black.withOpacity(.1),
+                 ),
+               ],
+             ),
+             child: Row(
+               children: <Widget>[
+                 SizedBox(width: 16),
+                 Center(
+                   child: Container(
+
+                     child: InkWell(
+                         onTap: () =>
+                             Navigator.of(context).pushNamed('/others-profile',
+                                 arguments: User(
+                                   id: user.id,
+                                   username: user.username,
+                                   email: user.email,
+                                   phone: user.phone,
+                                   country: user.country,
+                                   image: user.image,
+                                 )),
+                         child: Column(
+                           mainAxisAlignment: MainAxisAlignment.start,
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: <Widget>[
+                             Container(
+                               decoration: BoxDecoration(
+                                 color: Colors.grey,
+                                 shape: BoxShape.circle,
+                                 border: Border.all(
+                                   width: 2,
+                                   color: Color(0xFF76D0B7),
+                                 ),
+                                 image: DecorationImage(
+                                   fit: BoxFit.cover,
+                                   image: AssetImage(
+                                     'images/person.jpg',
+                                   ),
+                                 ),
+                               ),
+                               height: 70,
+                               width: 70,
+                               child: ClipOval(
+                                 child: user.image != null &&
+                                     user.image != ''
+                                     ? Image.network(
+                                   user.image,
+                                   fit: BoxFit.cover,
+                                 )
+                                     : Container(),
+                               ),
+                             ),
+
+                           ],
+                         )
+                     ),
+                   ),
+                 ),
+                 SizedBox(width: 16),
+                 Expanded(
+                   child: Text(
+                     '${user.username}',
+                     overflow: TextOverflow.ellipsis,
+                     style: TextStyle(
+                       fontSize: 16,
+                       fontWeight: FontWeight.w700,
+                       color: Color(0xFF75CFB6),
+                     ),
+                   ),
+                 ),
+                 Spacer(),
+                 Container(
+                   width: 111.5,
+                   height: 32.1,
+                   child: Text('Rank Order: $i'),
+                 ),
+                 SizedBox(width: 16),
+               ],
+             ),
+           );
+          }),
           SizedBox(height: 32),
           Center(
             child: RoundedButton(
@@ -187,4 +337,5 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
+
 }
