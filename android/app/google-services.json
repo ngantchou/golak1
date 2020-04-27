@@ -1,42 +1,35 @@
 {
   "project_info": {
-    "project_number": "334705934269",
-    "firebase_url": "https://golak-3a756.firebaseio.com",
-    "project_id": "golak-3a756",
-    "storage_bucket": "golak-3a756.appspot.com"
+    "project_number": "995280426724",
+    "firebase_url": "https://golak-3ad69.firebaseio.com",
+    "project_id": "golak-3ad69",
+    "storage_bucket": "golak-3ad69.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:334705934269:android:eb49c93ee24e5466e75cd4",
+        "mobilesdk_app_id": "1:995280426724:android:3b2c3e9ce851991a967ef1",
         "android_client_info": {
           "package_name": "com.example.golak"
         }
       },
       "oauth_client": [
         {
-          "client_id": "334705934269-p0tii6uuvakv79ekddk9eu4hv44829gj.apps.googleusercontent.com",
+          "client_id": "995280426724-3r5le60nr4vl6iukcsbb3oojhpunr8mq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAHS46ql_U8TdecjwxhQe6xITz1d-YPekk"
+          "current_key": "AIzaSyC2MdQq6jd7BpAbRNS3pKw-JsVvrn9JjUs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "334705934269-p0tii6uuvakv79ekddk9eu4hv44829gj.apps.googleusercontent.com",
+              "client_id": "995280426724-3r5le60nr4vl6iukcsbb3oojhpunr8mq.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "334705934269-l9debrg3uhaud8taktlfgrlot4miuidr.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.golak.mobile"
-              }
             }
           ]
         }

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:golak/elements/golakIcons.dart';
+import 'package:golak/firestore_database/notifications_fs_db.dart';
+import 'package:golak/store/notifiers/authenticationNotifier.dart';
 import 'package:golak/store/notifiers/flowNotifier.dart';
 import 'package:golak/store/notifiers/notificationsNotifier.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +25,11 @@ class NotchedBottomAppBar extends StatelessWidget {
     final _animateToPage = flowNotifier.animateToPage;
     final _page = flowNotifier.currentPage;
     final notificationsNotifier = Provider.of<NotificationsNotifier>(context);
-    final List<model.Notification> _notifications =
-        notificationsNotifier.notifications;
+    final int _notifications =
+        notificationsNotifier.unreadNotifCount;
+    final authenticationNotifier = Provider.of<AuthenticationNotifier>(context);
+    final String _accessToken = authenticationNotifier.accessToken;
+
     return BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 8.0,
@@ -76,14 +82,29 @@ class NotchedBottomAppBar extends StatelessWidget {
                       height: 30,
                       alignment: Alignment.topRight,
                       margin: EdgeInsets.only(top: 5),
-                      child: _notifications.length >0 ?Container(
-                        width: 15,
-                        height: 15,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.green,
-                            border: Border.all(color: Colors.white, width: 1)),
-                      ):Container(),
+                      child: StreamBuilder(
+                        stream:NotificationFirestoreDatabase
+                            .getCountUnreadNotifications(_accessToken),
+                          builder: (BuildContext context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                          bool notif=false;
+                          if(snapshot.hasData && snapshot.data!=null && snapshot.data.length>0 ){
+                            for(var i in snapshot.data){
+                              if(i!=null){
+                                notif=true;
+                              }
+                            }
+                            }
+                          if(notif){
+                           return Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.green,
+                                border: Border.all(color: Colors.white, width: 1)),
+                          );}else
+                            return Container();
+                          }),
                     ),
                   ],
                 ),

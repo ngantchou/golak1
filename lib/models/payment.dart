@@ -1,11 +1,13 @@
 // /payments/upcoming_payments/5d3597dc4dcd3f0017594901
 
 class Payment {
+  String id;
   final String circleName;
   final double amount;
   final DateTime upcomingDate;
 
-  const Payment({
+  Payment({
+    this.id,
     this.circleName,
     this.amount,
     this.upcomingDate,

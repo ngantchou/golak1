@@ -179,7 +179,6 @@ class _CreateCirclePageState extends State<CreateCirclePage> {
                   label: FlutterI18n.translate(context, "number_of_people"),
                   icon: GolakIcons.people,
                   options: <Option>[
-
                     Option(
                       value: '3',
                       text: '3',

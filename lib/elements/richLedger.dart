@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 
 class RichLedger extends StatelessWidget {
   RichLedger(this.ledger);
-  final List<Ledger> ledger;
+  final List<Future<Ledger>> ledger;
+  double total = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,7 @@ class RichLedger extends StatelessWidget {
     final footers = [
       FlutterI18n.translate(context, "total"),
       '',
-      ledger.length > 0
-          ? '\$${ledger?.map((Ledger li) => li.paid)?.reduce((double l1Paid, double l2Paid) => l1Paid + l2Paid)?.toString() ?? ''}'
-          : 'N/A',
+      total.toString(),
       'N/A',
       'N/A',
       'N/A',
@@ -76,38 +75,50 @@ class RichLedger extends StatelessWidget {
                 ),
             ],
           ),
-          for (final _gr in ledger)
-            Row(
-              children: <Widget>[
-                for (final value in [
-                  _gr.userName,
-                  _gr.drawDate.toString().split(' ').first,
-                  '\$${_gr.paid}',
-                  '${_gr.outstandingAmount}',
-                  '${_gr.lateFees}',
-                  '${_gr.creditScore}',
-                ])
-                  Container(
-                    width: 99.78,
-                    height: 28.43,
-                    margin: EdgeInsets.all(3),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF76D0B7),
-                    ),
-                    child: Text(
-                      value,
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+          for (final led in ledger)
+           Container(
+             child:  FutureBuilder(
+               future: led,
+               builder: (BuildContext context, AsyncSnapshot snapshot) {
+                 if (snapshot.connectionState == ConnectionState.done ) {
+                   Ledger l = snapshot.data as Ledger;
+                   print(l);
+                   return Row(
+                     children: <Widget>[
+                       for (final value in [
+                         l!=null?l.userName:"-",
+                         l!=null?l.drawDate.toString().split(' ').first:"-",
+                         l!=null?'\$${l.paid}':"-",
+                         l!=null?'${l.outstandingAmount}':"-",
+                         l!=null?'${l.lateFees}':"-",
+                         l!=null?'${l.creditScore}':"-",
+                       ])
+                         Container(
+                           width: 99.78,
+                           height: 28.43,
+                           margin: EdgeInsets.all(3),
+                           alignment: Alignment.center,
+                           decoration: BoxDecoration(
+                             color: Color(0xFF76D0B7),
+                           ),
+                           child: Text(
+                             value,
+                             textAlign: TextAlign.center,
+                             maxLines: 1,
+                             style: TextStyle(
+                               fontSize: 10,
+                               fontWeight: FontWeight.w500,
+                               color: Colors.white,
+                             ),
+                           ),
+                         ),
+                     ],
+                   );
+                 } else
+                   return Text('');
+               },
+             ),
+           ),
           for (final _ in List(max(9 - ledger.length, 0)))
             Row(
               children: <Widget>[

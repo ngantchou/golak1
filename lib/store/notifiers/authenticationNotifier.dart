@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:golak/firestore_database/user_fs_db.dart';
 import 'package:golak/models/user.dart';
 import 'package:golak/network/authentication.dart' as auth;
 import 'package:flutter/foundation.dart';
@@ -51,23 +52,16 @@ class AuthenticationNotifier with ChangeNotifier {
 
   Future<User> login({@required email, @required password}) async {
     loading = true;
-    var $response;
+    User $response;
     try {
-      $response = await auth.login(email: email, password: password);
+      $response = await UserFirestoreDatabase.login(email: email, password: password);
     } catch (e) {
       print('error@loging: $e');
     }
     if ($response != null) {
-      accessToken = $response['token'];
-      print(accessToken);
-      user = User(
-        id: $response['user']['id'],
-        username: $response['user']['name'],
-        image: $response['user']['picture'],
-        phone: $response['user']['mobile'],
-        country: $response['user']['country'],
-        email: $response['user']['email'],
-      );
+      accessToken = $response.id;
+      //print(accessToken);
+      user = $response;
       loading = false;
       initDataSources(
         rememberMe: rememberMe,
@@ -88,7 +82,7 @@ class AuthenticationNotifier with ChangeNotifier {
   }) async {
     loading = true;
     try {
-      final $response = await auth.signup(
+      final $response = await UserFirestoreDatabase.Register(
         username: username,
         email: email,
         password: password,
@@ -112,10 +106,9 @@ class AuthenticationNotifier with ChangeNotifier {
   }) async {
     loading = true;
     try {
-      final $response = await auth.updateProfilePicture(
+      final $response = await UserFirestoreDatabase.updateProfilePicture(
         userId: userId,
         picture: picture,
-        accessToken: accessToken,
       );
       if ($response != null) {
         user = User(
@@ -139,19 +132,20 @@ class AuthenticationNotifier with ChangeNotifier {
 
   updateOnesignalPlayerId({
     @required playerId,
+    @required userId,
   }) async {
     loading = true;
     try {
-      final $response = await auth.updateOnesignalPlayerId(
-        userId: user?.id,
+      final $response = await UserFirestoreDatabase.updateOnesignalId(
+        userId: userId,
         playerId: playerId,
-        accessToken: accessToken,
       );
       if ($response != null) {
         notifyListeners();
         loading = false;
         return $response;
       }
+      print('Error while updating oneSignal playerid ');
     } catch (e) {
       print('Error while updating oneSignal playerid ${e.toString()}');
     }

@@ -5,7 +5,9 @@ import 'package:golak/elements/notchedFAB.dart';
 import 'package:golak/elements/richCard.dart';
 import 'package:golak/elements/richHeader.dart';
 import 'package:golak/elements/sectionTitle.dart';
+import 'package:golak/firestore_database/payments_fs_db.dart';
 import 'package:golak/models/payout.dart';
+import 'package:golak/store/notifiers/authenticationNotifier.dart';
 import 'package:golak/store/notifiers/i18nNotifier.dart';
 import 'package:golak/store/notifiers/payoutsNotifier.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +18,8 @@ class UpcomingPayouts extends StatelessWidget {
     final payoutsNotifier = Provider.of<PayoutsNotifier>(context);
     final List<Payout> _payouts = payoutsNotifier.payouts;
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-
+    final authenticationNotifier = Provider.of<AuthenticationNotifier>(context);
+    final String _accessToken = authenticationNotifier.accessToken;
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: NotchedFAB(),
@@ -39,8 +42,63 @@ class UpcomingPayouts extends StatelessWidget {
           //     color: Color(0xFF494856),
           //   ),
           // ),
+          StreamBuilder(
+              stream: PaymentFirestoreDatabase.getUpcomingPayouts(circleId: null,userId: _accessToken),
+              builder: (context, AsyncSnapshot<List<Future<Payout>>> circleSP) {
+
+                if(circleSP.hasData && circleSP.data.length>0)
+                  return ListView.builder(
+                    //scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.all(2.0),
+                    primary: false,
+                    physics: BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: circleSP.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return FutureBuilder(future: circleSP.data[index],
+                          builder: (BuildContext context, AsyncSnapshot result) {
+                            Payout payout = result.data as Payout;
+
+                            if(payout!=null)
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: RichCard(
+                                  title: payout.circleName,
+                                  subTitle: DateTime.parse(payout.upcomingDate.toString().split(' ').first).toString(),
+                                  trailing: payout.amount.toString(),
+                                ),
+                              );
+                            else return Container();
+                          });
+                    },
+                  );
+                else
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(.1),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        FlutterI18n.translate(context, "you_dont_have_payouts_yet"),
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  );
+              }),
           SizedBox(height: 8 * 2.0),
-          if (_payouts.length > 0)
+        /*  if (_payouts.length > 0)
             for (final payout in _payouts) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -76,7 +134,7 @@ class UpcomingPayouts extends StatelessWidget {
                 ),
               ),
             ),
-          SizedBox(height: 8 * 9.0),
+          SizedBox(height: 8 * 9.0),*/
         ],
       ),
     );

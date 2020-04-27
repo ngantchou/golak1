@@ -18,7 +18,7 @@ class PeopleCircle extends StatelessWidget {
         final _phoneWidth = min(bx.biggest.width, bx.biggest.height);
         final rCircle = 6.283;
         final baseAngle = rCircle /
-            (circle.involvedUsers.length > 0 ? circle.involvedUsers.length : 1);
+            (circle.users.length > 0 ? circle.users.length : 1);
         return AspectRatio(
           aspectRatio: 1.0,
           child: Container(
@@ -53,7 +53,7 @@ class PeopleCircle extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${(circle.minContrib*circle.involvedUsers.length) ?? '0'} USD',
+                            '${(circle.minContrib*circle.users.length) ?? '0'} USD',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 12,
@@ -81,7 +81,7 @@ class PeopleCircle extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...circle.involvedUsers.asMap().map((index, involvedUser) {
+                ...circle.users.asMap().map((index, user) {
                   return MapEntry(
                     index,
                     Positioned(
@@ -96,12 +96,12 @@ class PeopleCircle extends StatelessWidget {
                           onTap: () =>
                               Navigator.of(context).pushNamed('/others-profile',
                                   arguments: User(
-                                    id: involvedUser['id'],
-                                    username: involvedUser['name'],
-                                    email: involvedUser['email'],
-                                    phone: involvedUser['mobile'],
-                                    country: involvedUser['country'],
-                                    image: involvedUser['picture'],
+                                    id: user.id,
+                                    username: user.username,
+                                    email: user.email,
+                                    phone: user.phone,
+                                    country: user.country,
+                                    image: user.image,
                                   )),
                           child: Column(
                             children: <Widget>[
@@ -123,16 +123,16 @@ class PeopleCircle extends StatelessWidget {
                                 height: 70,
                                 width: 70,
                                 child: ClipOval(
-                                  child: involvedUser['picture'] != null &&
-                                      involvedUser['picture'] != ''
+                                  child: user.image != null &&
+                                      user.image != ''
                                       ? Image.network(
-                                    involvedUser['picture'],
+                                    user.image,
                                     fit: BoxFit.cover,
                                   )
                                       : Container(),
                                 ),
                               ),
-                              Text(involvedUser['name'])
+                              Text(user.username)
                             ],
                           )
                         ),

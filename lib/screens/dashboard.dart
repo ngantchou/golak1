@@ -31,10 +31,10 @@ class DashboardPage extends StatelessWidget {
     List<User> userspay;
     String end_date = null ;
     switch(circle.contribType){
-      case "monthly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day).toString().split(' ').first;break;
-      case "dayly" : end_date = DateTime(circle.startDate.year, circle.startDate.month, circle.startDate.day +circle.involvedUsers.length).toString().split(' ').first;break;
-      case "bi-weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 3*circle.involvedUsers.length).toString().split(' ').first;break;
-      case "weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 7*circle.involvedUsers.length).toString().split(' ').first;break;
+      case "monthly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day).toString().split(' ').first;break;
+      case "dayly" : end_date = DateTime(circle.startDate.year, circle.startDate.month, circle.startDate.day +circle.users.length).toString().split(' ').first;break;
+      case "bi-weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 3*circle.users.length).toString().split(' ').first;break;
+      case "weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 7*circle.users.length).toString().split(' ').first;break;
     }
 
     return Scaffold(
@@ -54,7 +54,7 @@ class DashboardPage extends StatelessWidget {
                 horizontal: 22,
                 vertical: 4,
               ),
-              child: Text('${FlutterI18n.translate(context, "Pot Amount : ${circle.minContrib*circle.involvedUsers.length}")}',
+              child: Text('${FlutterI18n.translate(context, "Pot Amount : ${circle.minContrib*circle.users.length}")}',
               )
           ),
           Padding(
@@ -70,7 +70,7 @@ class DashboardPage extends StatelessWidget {
               horizontal: 22,
               vertical: 4,
             ),
-            child: Text('End date : ${ DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day).toString().split(' ').first}',
+            child: Text('End date : ${ DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day).toString().split(' ').first}',
             ),
           ),
 
@@ -79,7 +79,7 @@ class DashboardPage extends StatelessWidget {
               horizontal: 32,
               vertical: 16,
             ),
-            child: circle.involvedUsers.length<=3?PeopleCircle(
+            child: circle.users.length<=3?PeopleCircle(
               circle: circle,
             ):PeopleCircleListView(
               circle: circle,
@@ -98,33 +98,44 @@ class DashboardPage extends StatelessWidget {
               isSmall: true,
             ),
           ),
+
           SizedBox(height: 32),
-          Center(
+          _accessToken==circle.createdById?Center(
             child: RoundedButton(
               label: FlutterI18n.translate(context, "order_people"),
               labelSize: 15,
               icon: GolakIcons.people,
               onPressed: () async {
-                  final List<String> _names = circle.involvedUsers
-                      .sublist(0, circle.involvedUsers.length)
-                      .map((dynamic data) => data['name'] as String)
+                  final List<String> _names = circle.users
+                      .sublist(0, circle.users.length)
+                      .map((User data) => data.username )
                       .toList();
-                  final List<String> _emails = circle.involvedUsers
-                      .sublist(0, circle.involvedUsers.length)
-                      .map((dynamic data) => data['email'] as String)
+                  final List<String> _emails = circle.users
+                      .sublist(0, circle.users.length)
+                      .map((User data) => data.email )
                       .toList();
-                  final List<String> _phones = circle.involvedUsers
-                      .sublist(0, circle.involvedUsers.length)
-                      .map((dynamic data) => data['phone'] as String)
+                  final List<String> _phones = circle.users
+                      .sublist(0, circle.users.length)
+                      .map((User data) => data.phone )
                       .toList();
-                  userspay = await circlesNotifier.getUserpaid(accessToken: _accessToken, circleId: circle.id);
+                  final List<String> _ids = circle.users
+                      .sublist(0, circle.users.length)
+                      .map((User data) => data.id )
+                      .toList();
+                  final List<bool> _isPay = circle.users
+                      .sublist(0, circle.users.length)
+                      .map((User data) => data.isPay )
+                      .toList();
+                  //userspay = await circlesNotifier.getUserpaid(accessToken: _accessToken, circleId: circle.id);
                   Navigator.of(context).pushNamed(
                     '/reorder-people',
                     arguments: OrderPeopleArguments(
+                      ids:  _ids,
                       names:  _names,
                       emails:_emails,
                       phones: _phones,
-                      randomSlots: true,
+                      randomSlots: false,
+                      isPay: _isPay,
                       circle :circle,
                       userspaiy: userspay,
                     ),
@@ -132,9 +143,9 @@ class DashboardPage extends StatelessWidget {
               },
               isSmall: true,
             ),
-          ),
-          SizedBox(height: 32),
-          Center(
+          ):Container(),
+          _accessToken==circle.createdById?SizedBox(height: 32):Container(),
+          _accessToken==circle.createdById?Center(
             child: RoundedButton(
               label: FlutterI18n.translate(context, "invite_people"),
               labelSize: 15,
@@ -152,7 +163,7 @@ class DashboardPage extends StatelessWidget {
               ),
               isSmall: true,
             ),
-          ),
+          ):Container(),
           SizedBox(height: 16),
           Center(
             child: RoundedButton(

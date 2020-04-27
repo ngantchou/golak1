@@ -3,6 +3,7 @@ import 'package:golak/models/user.dart';
 
 class OrderPeopleArguments {
   final List<String> emails;
+  final List<String> ids;
   final List<String> names;
   final List<String> phones;
   final List<User> userspaiy;
@@ -10,6 +11,7 @@ class OrderPeopleArguments {
   final List<bool> isPay;
   final Circle circle;
   OrderPeopleArguments({
+    this.ids,
     this.names,
     this.emails,
     this.phones,

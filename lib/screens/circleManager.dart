@@ -16,7 +16,6 @@ class CircleManagerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Circle circle = ModalRoute.of(context).settings.arguments;
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: NotchedFAB(),
@@ -35,12 +34,18 @@ class CircleManagerPage extends StatelessWidget {
                   '${FlutterI18n.translate(context, "current_round")}${circle?.currentRound?.startDate != null ? ':  ' + circle?.currentRound?.startDate?.toString()?.split(' ')?.first : ''}',
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SectionTitle(
+              text:circle?.currentRound?.recipiend?.username
+            ),
+          ),
           SizedBox(height: 8 * 2.0),
-          ...circle.involvedUsers.map((involvedUser) {
+          ...circle.users.map((user) {
             final _paid = circle.currentRound != null &&
                 circle.currentRound.paymentsDoneDetails != null &&
                 circle.currentRound.paymentsDoneDetails.where((payment) {
-                      return payment['from_user'] == involvedUser['_id'];
+                      return payment['from_user'] == user.id;
                     }).length >
                     0;
             return Padding(
@@ -50,19 +55,22 @@ class CircleManagerPage extends StatelessWidget {
                 right: 16,
               ),
               child: Payment(
-                name: involvedUser['name'] ?? involvedUser['email'],
-                image: involvedUser['picture'],
+                name: user.username ?? user.email,
+                image: user.image,
                 paid: _paid,
                 paymentId: _paid
                     ? circle.currentRound.paymentsDoneDetails.where((payment) {
-                        return payment['from_user'] == involvedUser['_id'];
-                      }).first['_id']
+                        return payment['from_user'] == user.id;
+                      }).first['id']
                     : null,
-                userId: involvedUser['_id'],
+                userId: user.id,
                 amount: circle.minContrib,
                 upcomingDate: circle.currentRound?.startDate,
                 circleName: circle.name,
                 circleId: circle.id,
+                createdBy: circle.name,
+                recipiendName: circle.currentRound?.recipiend?.username,
+                nextUserRoundId: circle.currentRound?.recipientId,
                 roundId: circle.currentRound?.id,
               ),
             );

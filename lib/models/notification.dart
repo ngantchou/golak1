@@ -1,22 +1,34 @@
 class Notification {
-  final String id;
+   String id;
   final String message;
-  final DateTime createdAt;
+  bool seen;
+  final String concern_user;
+  final DateTime created_at;
+  final DateTime updated_at;
 
-  const Notification({
+   Notification({
     this.id,
     this.message,
-    this.createdAt,
+    this.seen,
+    this.concern_user,
+    this.created_at,
+    this.updated_at,
   });
 
   Notification.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         message = json['message'],
-        createdAt = DateTime.parse(json['createdAt']);
+        seen = json['seen'],
+        concern_user = json['concern_user'],
+        created_at = DateTime.parse(json['created_at']),
+        updated_at = DateTime.parse(json['updated_at']);
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'message': message,
-        'createdAt': createdAt?.toString(),
+        'seen': seen,
+        'concern_user': concern_user,
+        'created_at': created_at?.toString(),
+        'updated_at': updated_at?.toString(),
       };
 }

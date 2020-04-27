@@ -18,10 +18,14 @@ class Payment extends StatefulWidget {
     @required this.roundId,
     @required this.amount,
     @required this.circleName,
+    @required this.recipiendName,
+    @required this.nextUserRoundId,
     @required this.upcomingDate,
     @required this.circleId,
+    @required this.createdBy,
   });
   final String circleId;
+  final String createdBy;
   final String paymentId;
   final String userId;
   final String name;
@@ -31,6 +35,8 @@ class Payment extends StatefulWidget {
   final String roundId;
   final double amount;
   final String circleName;
+  final String nextUserRoundId;
+  final String recipiendName;
   final DateTime upcomingDate;
 
   @override
@@ -118,7 +124,7 @@ class _PaymentState extends State<Payment> {
                 borderRadius: BorderRadius.circular(8),
               ),
               onPressed: () async {
-                if (widget.roundId == null) return;
+                if (widget.roundId == null && widget.createdBy!= _accessToken ) return;
                 _paid = !_paid;
                 setState(() {});
                 if (_paid) {
@@ -140,11 +146,15 @@ class _PaymentState extends State<Payment> {
 
                   await paymentsNotifier.createPayment(
                     userId: widget.userId,
+                    createdBy: authenticationNotifier.user.username,
+                    userPayName: widget.name,
                     accessToken: _accessToken,
                     roundId: widget.roundId,
                     amount: widget.amount,
                     circleName: widget.circleName,
+                    recipiendName: widget.recipiendName,
                     upcomingDate: widget.upcomingDate,
+                    nextUserRoundId: widget.nextUserRoundId,
                   );
                 } else {
                   circlesNotifier.circles =

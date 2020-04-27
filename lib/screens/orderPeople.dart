@@ -13,6 +13,7 @@ import 'package:golak/elements/roundedButton.dart';
 import 'package:golak/elements/styledAlertDialog.dart';
 import 'package:golak/elements/styledLoader.dart';
 import 'package:golak/models/circle.dart';
+import 'package:golak/models/user.dart';
 import 'package:golak/store/notifiers/authenticationNotifier.dart';
 import 'package:golak/store/notifiers/circlesNotifier.dart';
 import 'package:golak/store/notifiers/i18nNotifier.dart';
@@ -48,6 +49,7 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
         ModalRoute.of(context).settings.arguments;
 
     final List<Map> _users = [];
+    final List<User> listUser = [];
     final List<int> _filtredOrders = _orders
         .where((int _order) => _order < arguments.emails.length)
         .toList();
@@ -116,14 +118,18 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                         for (final _index in _users
                             .asMap()
                             .keys) {
-                          circlesNotifier.newCircle.involvedUsers[_index] = ({
-                            'name': _users[_index]['name'],
-                            'email': _users[_index]['email'],
-                            "order": _index + 1,
-                            "isPay":_users[_index]['isPay'],
-                          });
+                          User u = User(
+                            username: _users[_index]['name'],
+                            email: _users[_index]['email'],
+                            isPay:_users[_index]['isPay'],
+                            country: null,
+                            image: null,
+                            phone: null,
+                          );
+                          u.order = _index;
+                           listUser.add(u);
                         }
-
+                        circlesNotifier.newCircle.users = listUser;
                           Circle $circle = await circlesNotifier.createCircle(
                             accessToken: _accessToken,
                           );
@@ -149,32 +155,31 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                                 });
                           }
                         }else{
-                          for (final _index in _users
-                              .asMap()
-                              .keys) {
-                            arguments.circle.involvedUsers.add({
-                              'name': _users[_index]['name'],
-                              'email': _users[_index]['email'],
-                              "order": _index + 1,
-                              "isPay":_users[_index]['isPay'],
-                            });
-                          }
+                            User user = new User(
+                              username: _users[0]['name'],
+                              email: _users[0]['email'],
+                              isPay:_users[0]['isPay'],
+                              country: null,
+                              image: null,
+                              phone: null,
+                            );
+                            //arguments.circle.users.add(user);
+
                           //todo ajouter le code pour l'invitation d'un membre;
                           final $addPartCircle = await circlesNotifier.addParticipant (
                               accessToken: _accessToken,
-                              involvedUsers: arguments.circle.involvedUsers,
+                              involvedUsers: user,
                               circleId: arguments.circle.id
                           );
                           if ($addPartCircle != null) {
-                            for (final _index in _users
-                                .asMap()
-                                .keys) {
-                              arguments.circle.involvedUsers.add({
-                                'name': _users[_index]['name'],
-                                'email': _users[_index]['email'],
-                                "order": _index + 1,
-                              });
-                            }
+                              arguments.circle.users.add(User(
+                                username: _users[0]['name'],
+                                email: _users[0]['email'],
+                                isPay:_users[0]['isPay'],
+                                country: null,
+                                image: null,
+                                phone: null,
+                              ));
                             Navigator.of(context).pushNamed(
                               '/dashboard',
                               arguments: arguments.circle,
@@ -258,31 +263,6 @@ class _OrderPeoplePageState extends State<OrderPeoplePage> {
                   ),
                   trailing: Icon(Icons.reorder),
                 ),
-                /*ListTile(
-                  key: ValueKey(_users[index]['email']),
-                  title: RaisedButton(
-                      onPressed: (){
-
-                      },
-                      child: Text("Received Payout ?"),
-                  ),
-                  trailing: Row(
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: (){
-
-                        },
-                        child: Text("Yes"),
-                      ),
-                      RaisedButton(
-                        onPressed: (){
-
-                        },
-                        child: Text("No"),
-                      ),
-                    ],
-                  ),
-                )*/
             ],
           ),
           if (Provider.of<CirclesNotifier>(context).loading) StyledLoader(),

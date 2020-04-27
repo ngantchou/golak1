@@ -79,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                           password: _passwordController.text);
                       if (user != null) {
                         authenticationNotifier.updateOnesignalPlayerId(
+                          userId: user.id,
                           playerId: notificationsNotifier.playerId,
                         );
                         Navigator.of(context).pushNamedAndRemoveUntil(

@@ -53,21 +53,29 @@ class _ReoderPeopleState extends State<ReoderPeoplePage>{
         ModalRoute.of(context).settings.arguments;
 
     final User _user = authenticationNotifier.user;
-     List<String>  id_user = new List<String>();
-     for(User u in arguments.userspaiy){
-       id_user.add(u.id);
-     }
-     print(id_user);
+
+    final List<Map> _users = [];
+    final List<User> listUser = [];
     final List<int> _filtredOrders = _orders
         .where((int _order) => _order < arguments.emails.length)
         .toList();
-
-   // arguments.circle.involvedUsers.remove(arguments.userspaiy)
+    for (final _order in _filtredOrders) {
+      if(arguments.isPay[_order]!=false){
+        _users.add({
+          'id': arguments.ids[_order],
+          'isPay': arguments.isPay[_order],
+          'name': arguments.names[_order],
+          'email': arguments.emails[_order],
+          'phone': arguments.phones[_order],
+        });
+      }
+    }
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: NotchedFAB(),
       bottomNavigationBar: NotchedBottomAppBar(),
+
       body: Stack(
         children: <Widget>[
           RichReorderableListView(
@@ -82,6 +90,32 @@ class _ReoderPeopleState extends State<ReoderPeoplePage>{
             footer: Column(
               children: <Widget>[
                 SizedBox(height: 32.0 - 8),
+                if (arguments.randomSlots)
+                  Padding(
+                    key: ValueKey('Randomize'),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: RoundedButton(
+                        label: FlutterI18n.translate(context, "randomize"),
+                        labelSize: 15,
+                        onPressed: () {
+                          final _factory =
+                          Timer.periodic(Duration(milliseconds: 100), (_) {
+                            _orders.sort(
+                                  (_, __) =>
+                              Random().nextInt(55) - Random().nextInt(55),
+                            );
+                            setState(() {});
+                          });
+                          Timer(Duration(milliseconds: 500), () {
+                            print("ici eforf test degorge we ");
+                            _factory.cancel();
+                          });
+                        },
+                        isSmall: true,
+                      ),
+                    ),
+                  ),
                 Padding(
                   key: ValueKey('Complete'),
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -90,8 +124,20 @@ class _ReoderPeopleState extends State<ReoderPeoplePage>{
                       label: FlutterI18n.translate(context, "complete"),
                       labelSize: 15,
                       onPressed: () async {
-                        // todo:save circle reoganaze
-                        Navigator.pop(context);
+                            print(_filtredOrders);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return StyledAlertDialog(
+                                    label: 'OK',
+                                    title: '...',
+                                    content: '',
+                                    cancel: false,
+                                    callback: () async {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                });
                       },
                       isSmall: true,
                     ),
@@ -108,87 +154,71 @@ class _ReoderPeopleState extends State<ReoderPeoplePage>{
               },
             ),
             children: <Widget>[
-              ...arguments.circle.involvedUsers.asMap().map((index, _users) {
-                print(id_user.contains(_users['id']));
-                print((_users['_id']));
-                if(id_user.contains(_users['_id'])==false)
-                return MapEntry(
-                  index,
-                  Slidable(
-                    key: ValueKey(index),
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    child: ListTile(
-                      key: ValueKey(_users['email']),
-                      title: Text('${_users['name']}'.toUpperCase()),
-                      subtitle: Container(
-                        height: 125,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+              for (final index in _users.asMap().keys)
+                ListTile(
+                  key: ValueKey(_users[index]['email']),
+                  title: Text('${_users[index]['name']}'.toUpperCase()),
+                  subtitle: Container(
+                    height: 131,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                    '${FlutterI18n.translate(context, "email")}: '),
-                                Text(
-                                  '${_users['email']}',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                    '${FlutterI18n.translate(context, "phone")}: '),
-                                Text(
-                                  '${_users['phone']}',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                    '${FlutterI18n.translate(context, "order")}: '),
-                                Text(
-                                  '#${index + 1}',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ],
+                            Text(
+                                '${FlutterI18n.translate(context, "email")}: '),
+                            Text(
+                              '${_users[index]['email']}',
+                              style: TextStyle(color: Colors.black),
                             ),
                           ],
                         ),
-                      ),
-                      trailing: Icon(Icons.reorder),
-                    ),
-                    secondaryActions: <Widget>[
-                      IconSlideAction(
-                          caption: 'Delete',
-                          color: Colors.red,
-                          icon: Icons.delete,
+                        Row(
+                          children: <Widget>[
+                            Text(
+                                '${FlutterI18n.translate(context, "phone")}: '),
+                            Text(
+                              '${_users[index]['phone']}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                                '${FlutterI18n.translate(context, "order")}: '),
+                            Text(
+                              '#${index + 1}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
 
-                          onTap: () async {
-                            // ToDO: adding delete round inside circle
-                            print(_users['_id']);
-                            final $round = await circlesNotifier.deleteRoundCircles(
-                                accessToken: _accessToken,
-                                phone: _users['phone'],
-                                userId: _user.id,
-                                email: _users['email'],
-                                circleId: _users['circle']
-                            );
-                            print($round);
-                            /*setState(() {
-                          arguments.emails.removeAt(index);
-                        });*/
-                          }
-                      ),
-                    ],
+                        Container(height: 2,color: Colors.white70,)
+                      ],
+                    ),
                   ),
-                );
-                else
-                  return MapEntry(index, Container(key:Key(_users['_id'])));
-              }).values,
+                  trailing: Container(
+                    width: 50,
+                    child: IconButton(
+
+                        color: Colors.red,
+                        icon: Icon(Icons.delete),
+
+                        onPressed: () async {
+                          final $round = await circlesNotifier.deleteRoundCircles(
+                              userId: _users[index]['id'],
+                              circleId: arguments.circle.id
+                          );
+                          print($round);
+                          setState(() {
+                            _users.removeAt(index);
+                            arguments.circle.users.removeAt(index);
+                          });
+                        }
+                    ),
+                  ),
+                ),
             ],
           ),
           if (Provider.of<CirclesNotifier>(context).loading) StyledLoader(),

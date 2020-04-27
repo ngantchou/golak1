@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:golak/models/user.dart';
+
 final struct = '''
 {
   "id": "5d3598994dcd3f0017594904",
@@ -58,8 +62,12 @@ class Circle {
   double minContrib;
   String contribType;
   double totalAmount;
+  int numUsers;
   List<dynamic> involvedUsers;
+  List<User> users;
   DateTime startDate;
+  DateTime created_at;
+  DateTime updated_at;
   Round currentRound;
 
   Circle({
@@ -70,22 +78,28 @@ class Circle {
     this.contribType,
     this.totalAmount,
     this.involvedUsers,
+    this.numUsers,
+    this.users,
     this.startDate,
     this.currentRound,
+    this.created_at,
+    this.updated_at,
   });
 
   Circle.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
+      : id = json['_id'],
         createdById = json['createdById'],
         name = json['name'],
-        minContrib = json['minContrib'],
-        contribType = json['contribType'],
-        totalAmount = json['totalAmount'],
         involvedUsers = json['involvedUsers'],
-        startDate = DateTime.parse(json['startDate']),
-        currentRound = json['currentRound'] != null
-            ? Round.fromJson(json['currentRound'])
-            : null;
+        minContrib = json['minContrib']!= null
+            ? double.parse(json['minContrib']?.toString()):null,
+        contribType = json['contribType'],
+        numUsers = json['numUsers'],
+        totalAmount = json['totalAmount']!= null
+            ? double.parse(json['totalAmount']?.toString()):null,
+        startDate =  DateTime.parse(json['startDate'].toDate().toString()),
+        updated_at = DateTime.parse(json['updated_at'].toDate().toString()),
+        created_at = DateTime.parse(json['created_at'].toDate().toString());
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -95,47 +109,66 @@ class Circle {
         'contribType': contribType,
         'totalAmount': totalAmount,
         'involvedUsers': involvedUsers,
+        'numUsers': numUsers,
         'startDate': startDate?.toString(),
+        'created_at': created_at?.toString(),
+        'updated_at': updated_at?.toString(),
         'currentRound': currentRound?.toJson(),
       };
+
+  @override
+  String toString() {
+    return 'Circle{id: $id, createdById: $createdById, name: $name, minContrib: $minContrib, contribType: $contribType, totalAmount: $totalAmount, involvedUsers: $involvedUsers, startDate: $startDate, created_at: $created_at, updated_at: $updated_at, currentRound: $currentRound}';
+  }
+
 }
 
 class Round {
-  final String id;
+   String id;
   final String recipientId;
   final DateTime startDate;
   final DateTime endDate;
   double paymentsDoneSum;
-  final paymentsDoneDetails;
-
+  var paymentsDoneDetails;
+  final String circleId;
+  final DateTime created_at;
+  final DateTime updated_at;
+  User recipiend;
   Round({
     this.id,
     this.recipientId,
+    this.circleId,
     this.startDate,
     this.endDate,
     this.paymentsDoneSum,
     this.paymentsDoneDetails,
+    this.created_at,
+    this.updated_at,
   });
 
   Round.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         recipientId = json['recipientId'],
-        startDate = json['start_date'] != null
-            ? DateTime.parse(json['start_date'])
-            : null,
-        endDate =
-            json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-        paymentsDoneDetails = json['paymentsDoneDetails'],
-        paymentsDoneSum = json['paymentsDoneSum'] != null
-            ? double.parse(json['paymentsDoneSum']?.toString())
-            : null;
+        circleId = json['circleId'],
+        startDate = DateTime.parse(json['start_date']),
+        paymentsDoneSum = 0,
+        paymentsDoneDetails = null,
+        created_at = DateTime.parse(json['created_at']),
+        updated_at = DateTime.parse(json['updated_at']),
+        endDate = DateTime.parse(json['end_date']);
 
   Map<String, dynamic> toJson() => {
-        'id': id,
         'recipientId': recipientId,
-        'start_date': startDate?.toString(),
-        'end_date': endDate?.toString(),
-        'paymentsDoneSum': paymentsDoneSum,
-        'paymentsDoneDetails': paymentsDoneDetails,
+        'circleId': circleId,
+        'start_date': startDate.toString(),
+        'end_date': endDate.toString(),
+        'created_at': created_at.toString(),
+        'updated_at': updated_at.toString(),
       };
+
+  @override
+  String toString() {
+    return 'Round{id: $id, recipientId: $recipientId, startDate: $startDate, endDate: $endDate, paymentsDoneSum: $paymentsDoneSum, paymentsDoneDetails: $paymentsDoneDetails, circleId: $circleId, created_at: $created_at, updated_at: $updated_at}';
+  }
+
 }

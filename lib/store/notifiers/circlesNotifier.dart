@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:golak/firestore_database/circle_fs_db.dart';
+import 'package:golak/firestore_database/round_fs_db.dart';
 import 'package:golak/models/circle.dart';
 import 'package:golak/models/user.dart';
 import 'package:golak/network/circles.dart' as circlesNetwork;
@@ -42,6 +44,7 @@ class CirclesNotifier with ChangeNotifier {
     totalAmount: 0,
     // final List<dynamic> involvedUsers;
     involvedUsers: [],
+    users: [],
     // final DateTime startDate;
     startDate: DateTime.now(),
     // final Round currentRound;
@@ -51,6 +54,14 @@ class CirclesNotifier with ChangeNotifier {
     _newCircle = $newCircle;
     notifyListeners();
   }
+  List<Round> _rounds;
+
+  List<Round> get rounds => _rounds;
+
+  set rounds(List<Round> value) {
+    _rounds = value;
+    //notifyListeners();
+  }
 
   List<Circle> _circles;
   List<Circle> get circles => _circles;
@@ -58,7 +69,7 @@ class CirclesNotifier with ChangeNotifier {
     _circles = $circles;
     notifyListeners();
 
-    if (rememberMe)
+    /*if (rememberMe)
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString(
           'circles',
@@ -66,7 +77,8 @@ class CirclesNotifier with ChangeNotifier {
             return circle.toJson();
           }).toList()),
         );
-      });
+      });*/
+
   }
 
   init({rememberMe, accessToken, userId}) async {
@@ -88,29 +100,14 @@ class CirclesNotifier with ChangeNotifier {
 
   Future<String> getCircles({@required accessToken, @required userId}) async {
     loading = true;
-    var $response;
+     List<Circle>  $circles;
     try {
-      $response = await circlesNetwork.getCircles(
-        accessToken: accessToken,
-        userId: userId,
-      );
+      $circles = (await CircleFirestoreDatabase.getCirclesList(
+         accessToken,
+      )) as List<Circle>;
     } catch (e) {}
-    if ($response != null) {
-      List<dynamic> jsonCircles = $response['circles'];
-      final List<Circle> $circles = jsonCircles
-          .where((circle) => circle['currentRound'] != null)
-          .map((circle) {
-        return Circle(
-            id: circle['id'],
-            createdById: circle['created_by']['id'],
-            name: circle['name'],
-            minContrib: double.parse(circle['min_contrib'].toString()),
-            contribType: circle['contrib_type'],
-            totalAmount: double.parse(circle['total_amount'].toString()),
-            involvedUsers: circle['involved_users'],
-            startDate: DateTime.parse(circle['start_date'].toString()),
-            currentRound: Round.fromJson(circle['currentRound']));
-      }).toList();
+    if ($circles != null) {
+
       if ($circles.length > 0) circles = $circles.reversed.toList();
       loading = false;
       return accessToken;
@@ -119,20 +116,46 @@ class CirclesNotifier with ChangeNotifier {
       return null;
     }
   }
-  Future<String> addParticipant({ accessToken, involvedUsers,  circleId}) async {
+  Future<String> getRounds({@required circleId}) async {
+    loading = true;
+    List<Round>  $rounds=[];
+    try {
+     RoundFirestoreDatabase.getUserIDRoundForCircle(
+        circleId: circleId,
+      ).listen((data) async {
+       for(var d in data) {
+         $rounds.add(await d);
+       }
+      });
+    } catch (e) {}
+    if ($rounds != null) {
+
+      if ($rounds.length > 0) rounds = $rounds.reversed.toList();
+      loading = false;
+      return circleId;
+    } else {
+      loading = false;
+      return null;
+    }
+  }
+
+  Future<String> addParticipant({ accessToken,User involvedUsers,  circleId}) async {
     loading = true;
     var $response;
     try{
-      $response = await circlesNetwork.addParticipant (
+      $response = await CircleFirestoreDatabase.addParticipant (
           accessToken: accessToken,
-          involvedUsers: involvedUsers,
+          user: involvedUsers,
           circleId: circleId
       );
+      loading = false;
       return $response.toString() ;
     }catch(e){
+      loading = false;
       print('$e');
     }
   }
+
   Future<List<User>> getUserpaid(
       {@required accessToken, @required circleId}) async {
     // loading = true;
@@ -158,15 +181,12 @@ class CirclesNotifier with ChangeNotifier {
       return null;
     }
   }
-  Future<String> deleteRoundCircles({@required accessToken, @required phone,@required userId, @required email, @required circleId }) async {
+  Future<String> deleteRoundCircles({@required userId, @required circleId }) async {
     loading = true;
     var $response;
     //print(email);
     try {
-      $response = await circlesNetwork.deleteRoundCircle(
-        accessToken: accessToken,
-        phone : phone,
-        email: email,
+      $response = await CircleFirestoreDatabase.deleteParticipant(
         circleId: circleId,
           userId: userId,
       );
@@ -186,22 +206,22 @@ class CirclesNotifier with ChangeNotifier {
     @required String accessToken,
   }) async {
     loading = true;
-    var $response;
+    Circle response;
     try {
-      $response = await circlesNetwork.createCircle(
+      response = await CircleFirestoreDatabase.createCircle(
         accessToken: accessToken,
         name: newCircle.name,
         minContrib: newCircle.minContrib,
         contribType: newCircle.contribType,
         totalAmount: newCircle.totalAmount,
-        involvedUsers: newCircle.involvedUsers,
+        involvedUsers: newCircle.users,
         startDate: newCircle.startDate,
       );
     } catch (e) {
-      print('$e');
+      print('exception : $e');
     }
-    if ($response != null) {
-      newCircle = Circle(
+    if (response != null) {
+    /*  newCircle = Circle(
           id: $response['id'],
           createdById: $response['created_by']['id'],
           name: $response['name'],
@@ -212,8 +232,9 @@ class CirclesNotifier with ChangeNotifier {
           startDate: DateTime.parse($response['start_date'].toString()),
           currentRound: $response['currentRound'] != null
               ? Round.fromJson($response['currentRound'])
-              : null);
-      circles.insert(0, newCircle);
+              : null);*/
+      print(response);
+      circles.insert(0, response);
       loading = false;
       return newCircle;
     } else {

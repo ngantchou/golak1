@@ -32,12 +32,12 @@ class CircleStatsPage extends StatelessWidget {
       {
         'title': FlutterI18n.translate(context, "total_amount"),
         'image': 'images/total-amount@3x.png',
-        'value': '\$${circle.involvedUsers.length * circle.minContrib}',
+        'value': '\$${circle.users.length * circle.minContrib}',
       },
       {
         'title': FlutterI18n.translate(context, "number_of_people"),
         'image': 'images/number-of-people@3x.png',
-        'value': '${circle.involvedUsers.length}',
+        'value': '${circle.users.length}',
       },
       {
         'title': FlutterI18n.translate(context, "start_date"),
@@ -96,10 +96,10 @@ class CircleStatsPage extends StatelessWidget {
     String end_date = "Unavailable";
     print(circle.contribType);
     switch(circle.contribType){
-      case "monthly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day).toString().split(' ').first;break;
-      case "daily" :return end_date = DateTime(circle.startDate.year, circle.startDate.month, circle.startDate.day +circle.involvedUsers.length).toString().split(' ').first;break;
-      case "bi-weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 3*circle.involvedUsers.length).toString().split(' ').first;break;
-      case "weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.involvedUsers.length , circle.startDate.day + 7*circle.involvedUsers.length).toString().split(' ').first;break;
+      case "monthly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day).toString().split(' ').first;break;
+      case "daily" :return end_date = DateTime(circle.startDate.year, circle.startDate.month, circle.startDate.day +circle.users.length).toString().split(' ').first;break;
+      case "bi-weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 3*circle.users.length).toString().split(' ').first;break;
+      case "weekly" : return end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 7*circle.users.length).toString().split(' ').first;break;
       default :end_date = "Unavailable";
     }
     return end_date;

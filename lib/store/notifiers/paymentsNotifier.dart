@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:golak/firestore_database/payments_fs_db.dart';
 import 'package:golak/models/payment.dart';
+import 'package:golak/models/user.dart';
 import 'package:golak/network/payments.dart' as paymentsNetwork;
 import 'package:flutter/foundation.dart';
+import 'package:golak/store/notifiers/notificationsNotifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentsNotifier with ChangeNotifier {
@@ -10,16 +13,18 @@ class PaymentsNotifier with ChangeNotifier {
   bool get loading => _loading;
   set loading(bool $loading) {
     _loading = $loading;
+    onChange();
+  }
+  void onChange() {
     notifyListeners();
   }
-
   List<Payment> _payments;
   List<Payment> get payments => _payments;
   set payments(List<Payment> $payments) {
     _payments = $payments;
-    notifyListeners();
+    onChange();
 
-    if (rememberMe)
+    /*if (rememberMe)
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString(
           'payments',
@@ -27,7 +32,7 @@ class PaymentsNotifier with ChangeNotifier {
             return payment.toJson();
           }).toList()),
         );
-      });
+      });*/
   }
 
   init({rememberMe, accessToken, userId}) async {
@@ -48,18 +53,14 @@ class PaymentsNotifier with ChangeNotifier {
 
   Future<String> getPayments({@required accessToken, @required userId}) async {
     loading = true;
-    var $response;
+    List<Payment> $payments ;
     try {
-      $response = await paymentsNetwork.getPayments(
-        accessToken: accessToken,
-        userId: userId,
-      );
+      $payments = await PaymentFirestoreDatabase.getPayments(
+        roundID: userId,
+      ).first;
+      print($payments);
     } catch (e) {}
-    if ($response != null) {
-      List<dynamic> jsonPayments = $response['rows'];
-      final List<Payment> $payments = jsonPayments.map((payment) {
-        return Payment.fromJson(payment);
-      }).toList();
+    if ($payments != null) {
       if ($payments.length > 0) payments = $payments.reversed.toList();
       loading = false;
       return accessToken;
@@ -71,27 +72,35 @@ class PaymentsNotifier with ChangeNotifier {
 
   Future<String> createPayment({
     @required accessToken,
+    @required createdBy,
+    @required userPayName,
     @required userId,
     @required roundId,
     @required amount,
+    @required nextUserRoundId,
     @required circleName,
+    @required recipiendName,
     @required upcomingDate,
   }) async {
     loading = true;
     var $response;
     try {
-      $response = await paymentsNetwork.createPayment(
-        accessToken: accessToken,
+      $response = await PaymentFirestoreDatabase.createPayment(
         userId: userId,
         roundId: roundId,
       );
     } catch (e) {}
-    if ($response != null) {
+    if ($response) {
       final Payment _payment = Payment(
         amount: amount,
         circleName: circleName,
         upcomingDate: upcomingDate,
       );
+
+      NotificationsNotifier.notifyNextRoundUser(circleName: circleName,nextRoundDatetime: upcomingDate,recipientUsername: recipiendName,nextUserRoundId: nextUserRoundId );
+      NotificationsNotifier.notifyPaymentDone(circleName: circleName,facilitatorName: createdBy,fromUserId:userId);
+      NotificationsNotifier.notifyPayoutDone(circleName:circleName,toUserId: userId);
+      NotificationsNotifier.notifyPayoutMarked(circleName: circleName,fromUsername:userPayName,facilitatorId: accessToken);
       payments.insert(0, _payment);
       loading = false;
       return accessToken;
@@ -108,12 +117,11 @@ class PaymentsNotifier with ChangeNotifier {
     loading = true;
     var $response;
     try {
-      $response = await paymentsNetwork.deletePayment(
-        accessToken: accessToken,
+      $response = await PaymentFirestoreDatabase.deletePayment(
         paymentId: paymentId,
       );
     } catch (e) {}
-    if ($response != null) {
+    if ($response) {
       // todo remvove from list
       loading = false;
       return accessToken;

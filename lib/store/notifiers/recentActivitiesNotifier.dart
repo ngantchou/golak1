@@ -19,7 +19,7 @@ class RecentActivitiesNotifier with ChangeNotifier {
     _recentActivities = $recentActivities;
     notifyListeners();
 
-    if (rememberMe)
+   /* if (rememberMe)
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString(
           'recentActivities',
@@ -27,7 +27,7 @@ class RecentActivitiesNotifier with ChangeNotifier {
             return recentActivity.toJson();
           }).toList()),
         );
-      });
+      });*/
   }
 
   init({rememberMe, accessToken, userId}) async {
@@ -64,7 +64,7 @@ class RecentActivitiesNotifier with ChangeNotifier {
         return RecentActivity(
           amount: double.parse(recentActivity['amount'].toString()),
           title: recentActivity['title']['en'],
-          paymentDate: DateTime.parse(recentActivity['paymentDate']),
+          paymentDate: recentActivity['paymentDate'],
         );
       }).toList();
       if ($recentActivities.length > 0)

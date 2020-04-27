@@ -13,6 +13,7 @@ import 'package:golak/elements/roundedButton.dart';
 import 'package:golak/elements/sectionTitle.dart';
 import 'package:golak/elements/styledAlertDialog.dart';
 import 'package:golak/elements/styledLoader.dart';
+import 'package:golak/firestore_database/user_fs_db.dart';
 import 'package:golak/models/recentActivity.dart';
 import 'package:golak/models/user.dart';
 import 'package:golak/store/notifiers/authenticationNotifier.dart';
@@ -51,10 +52,11 @@ class ProfilePage extends StatelessWidget {
 
     return SaffoldedProfile(
       isScaffolded: _person != null,
-      child: Stack(
+      child:  ListView(
+        padding: EdgeInsets.all(0),
         children: <Widget>[
-          ListView(
-            padding: EdgeInsets.all(0),
+          Column(
+            //padding: EdgeInsets.all(0),
             children: <Widget>[
               RichHeader(title: null),
               Padding(
@@ -98,7 +100,143 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8 * 2.0),
-                if (_recentActivities.length > 0)
+                StreamBuilder(
+                    stream: UserFirestoreDatabase.getRecentPayment(userId: _user?.id),
+                    builder: (context, AsyncSnapshot<List<Future<RecentActivity>>> circleSP) {
+
+                      if(circleSP.hasData && circleSP.data.length>0)
+                        return ListView.builder(
+                          //scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.all(2.0),
+                          primary: false,
+                          physics: BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: circleSP.data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FutureBuilder(future: circleSP.data[index],
+                                builder: (BuildContext context, AsyncSnapshot result) {
+                                  RecentActivity recentActivity = result.data as RecentActivity;
+
+                                  if(recentActivity!=null)
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: RichCard(
+                                        title: recentActivity.title,
+                                        subTitle: recentActivity.paymentDate
+                                            .toString()
+                                            .split(' ')
+                                            .first,
+                                        isLightTitle: true,
+                                        trailing: recentActivity.amount.toString(),
+                                      ),
+                                    );
+                                  else if (recentActivity==null){
+                                    return Container();
+                                  }
+                                  else return Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: StyledLoader(),
+                                  );
+                                });
+                          },
+                        );
+                      else
+                        return  Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Container(
+                            padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                  color: Colors.black.withOpacity(.1),
+                                ),
+                              ],
+                            ),
+                            /*child: Text(
+                              FlutterI18n.translate(context,
+                                  "your_recent_activities_will_be_listed_here"),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),*/
+                          ),
+                        );
+                    }),
+                StreamBuilder(
+                    stream: UserFirestoreDatabase.getRecentPayout(userId: _user?.id),
+                    builder: (context, AsyncSnapshot<List<Future<RecentActivity>>> circleSP) {
+
+                      if(circleSP.hasData && circleSP.data.length>0)
+                        return ListView.builder(
+                          //scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.all(2.0),
+                          primary: false,
+                          physics: BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: circleSP.data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FutureBuilder(future: circleSP.data[index],
+                                builder: (BuildContext context, AsyncSnapshot result) {
+                                  RecentActivity recentActivity = result.data as RecentActivity;
+
+                                  if(recentActivity!=null)
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: RichCard(
+                                        title: recentActivity.title,
+                                        subTitle: recentActivity.paymentDate
+                                            .toString()
+                                            .split(' ')
+                                            .first,
+                                        isLightTitle: true,
+                                        trailing: recentActivity.amount.toString(),
+                                      ),
+                                    );
+                                  else if (recentActivity==null){
+                                    return Container();
+                                  }
+                                  else return Container(
+                                      height: 50,
+                                      width: 50,
+                                      child: StyledLoader(),
+                                    );
+                                });
+                          },
+                        );
+                      else
+                        return  Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Container(
+                            padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                  color: Colors.black.withOpacity(.1),
+                                ),
+                              ],
+                            ),
+                            /*child: Text(
+                              FlutterI18n.translate(context,
+                                  "your_recent_activities_will_be_listed_here"),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),*/
+                          ),
+                        );
+                    }),
+               /* if (_recentActivities.length > 0)
                   for (final recentActivity in _recentActivities.sublist(
                       0, min(_recentActivities.length, 5))) ...[
                     Padding(
@@ -140,7 +278,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
               ],
               SizedBox(height: 8 * 4.0),
               if (!_isMe)
@@ -244,7 +382,7 @@ class ProfilePage extends StatelessWidget {
                             title: FlutterI18n.translate(context, "log_out"),
                             content: FlutterI18n.translate(
                               context,
-                              "are_you_sure_you_want_to_logout?",
+                              "are you sure you want to logout?",
                             ),
                             callback: () async {
                               Navigator.pop(cxt);

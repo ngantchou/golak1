@@ -16,19 +16,19 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   bool isLangInitialized = false;
-  bool navigated = false;
+  bool navigated = true;
 
   @override
   Widget build(BuildContext context) {
     final _phoneHeight = MediaQuery.of(context).size.height;
     final authenticationNotifier = Provider.of<AuthenticationNotifier>(context);
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-    print(authenticationNotifier.accessToken );
-   /* if (!navigated &&
+   print("access token ${authenticationNotifier.user}");
+    if (navigated &&
         authenticationNotifier.accessToken != null &&
         authenticationNotifier.user != null)
       Timer.run(() {
-        navigated = true;
+
         setState(() {});
         i18nNotifier.changeLanguage(context, null);
         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -37,6 +37,7 @@ class _WelcomePageState extends State<WelcomePage> {
         );
       });
     else if (!isLangInitialized) {
+      navigated = false;
       Timer.run(() {
         i18nNotifier.changeLanguage(context, null);
         setState(() {
@@ -44,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
         });
       });
 
-    }*/
+    }
     Timer.run(() {
       i18nNotifier.changeLanguage(context, null);
       setState(() {
@@ -59,17 +60,17 @@ class _WelcomePageState extends State<WelcomePage> {
           SizedBox(height: _phoneHeight * .14),
           BrandImage(isLarge: true),
           SizedBox(height: _phoneHeight * .10),
-          RoundedButton(
+          !navigated?  RoundedButton(
             label: FlutterI18n.translate(context, "login"),
             labelSize: 22,
             onPressed: () => Navigator.of(context).pushNamed('/login'),
-          ),
+          ):Container(),
           SizedBox(height: 25),
-          RoundedButton(
+          !navigated?RoundedButton(
             label: FlutterI18n.translate(context, "sign_up"),
             labelSize: 22,
             onPressed: () => Navigator.of(context).pushNamed('/signup'),
-          ),
+          ):Container(),
           SizedBox(height: _phoneHeight * .10),
           Language(initialLang: i18nNotifier.currentLang),
         ],

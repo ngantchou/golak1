@@ -10,14 +10,16 @@ class PayoutsNotifier with ChangeNotifier {
   bool get loading => _loading;
   set loading(bool $loading) {
     _loading = $loading;
+    onChange();
+  }
+  void onChange() {
     notifyListeners();
   }
-
   List<Payout> _payouts;
   List<Payout> get payouts => _payouts;
   set payouts(List<Payout> $payouts) {
     _payouts = $payouts;
-    notifyListeners();
+    onChange();
 
     if (rememberMe)
       SharedPreferences.getInstance().then((prefs) {

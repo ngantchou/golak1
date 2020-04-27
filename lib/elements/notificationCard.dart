@@ -4,9 +4,11 @@ class NotificationCard extends StatelessWidget {
   NotificationCard({
     @required this.text,
     @required this.date,
+    @required this.seen,
   });
   final String text;
   final String date;
+  final bool seen;
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +34,15 @@ class NotificationCard extends StatelessWidget {
               fontSize: 16,
             ),
           ),
-          Text(
+          ListTile(
+              title:Text(
             date,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
               color: Colors.grey.shade400,
             ),
-          ),
+          ),trailing: Icon(Icons.mail,color: seen?Colors.black12:Colors.lightBlueAccent,),)
         ],
       ),
     );

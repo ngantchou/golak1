@@ -92,7 +92,7 @@ class CircleCard extends StatelessWidget {
                   children: [
                     if (circle?.currentRound?.endDate != null) ...[
                       TextSpan(
-                        text: '\$${circle.currentRound.paymentsDoneSum ?? 0}/',
+                        text: '\$${circle.currentRound.paymentsDoneSum * circle.minContrib ?? 0}/',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -101,7 +101,7 @@ class CircleCard extends StatelessWidget {
                       ),
                       TextSpan(
                         text:
-                            '\$${circle.minContrib * circle.involvedUsers.length}',
+                            '\$${circle.minContrib * circle.users.length}',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.black87,
@@ -111,7 +111,7 @@ class CircleCard extends StatelessWidget {
                     ] else ...[
                       TextSpan(
                         text:
-                            '\$${circle.minContrib * circle.involvedUsers.length}',
+                            '\$${circle.minContrib * circle.users.length}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -138,8 +138,8 @@ class CircleCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
-                value: (circle.currentRound?.paymentsDoneSum ?? 0) /
-                    (circle.minContrib * circle.involvedUsers.length),
+                value: (circle.currentRound?.paymentsDoneSum * circle.minContrib ?? 0) /
+                    (circle.minContrib * circle.users.length),
                 backgroundColor: Color(0xFFE5E5E5),
                 valueColor: AlwaysStoppedAnimation(Color(0xFF6FBCA9)),
               ),
@@ -162,7 +162,7 @@ class CircleCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.loose,
                   children: <Widget>[
-                    ...circle.involvedUsers.asMap().map((index, involvedUser) {
+                    ...circle.users.asMap().map((index, involvedUser) {
                       return MapEntry(
                           index,
                           Positioned(
@@ -186,10 +186,10 @@ class CircleCard extends StatelessWidget {
                                 ),
                               ),
                               child: ClipOval(
-                                child: involvedUser['picture'] != null &&
-                                        involvedUser['picture'] != ''
+                                child: involvedUser.image != null &&
+                                    involvedUser.image  != ''
                                     ? Image.network(
-                                        involvedUser['picture'],
+                                  involvedUser.image ,
                                         fit: BoxFit.cover,
                                       )
                                     : Container(),

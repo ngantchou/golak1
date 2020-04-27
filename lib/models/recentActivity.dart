@@ -1,7 +1,7 @@
 class RecentActivity {
   final String title;
   final double amount;
-  final DateTime paymentDate;
+  final String paymentDate;
 
   const RecentActivity({
     this.title,
@@ -11,8 +11,8 @@ class RecentActivity {
 
   RecentActivity.fromJson(Map<String, dynamic> json)
       : title = json['title'],
-        amount = double.parse(json['amount']),
-        paymentDate = DateTime.parse(json['paymentDate']);
+        amount = double.parse(json['amount'].toString()),
+        paymentDate = json['paymentDate'];
 
   Map<String, dynamic> toJson() => {
         'title': title,
