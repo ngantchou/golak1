@@ -37,7 +37,7 @@ class DashboardPage extends StatelessWidget {
       case "bi-weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 3*circle.users.length).toString().split(' ').first;break;
       case "weekly" : end_date = DateTime(circle.startDate.year, circle.startDate.month +circle.users.length , circle.startDate.day + 7*circle.users.length).toString().split(' ').first;break;
     }
-    int i =0;
+    int i = 0;
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: NotchedFAB(),
@@ -228,7 +228,7 @@ class DashboardPage extends StatelessWidget {
                  Container(
                    width: 111.5,
                    height: 32.1,
-                   child: Text('Rank Order: $i'),
+                   child: Text('Rank: '+i.toString()),
                  ),
                  SizedBox(width: 16),
                ],
