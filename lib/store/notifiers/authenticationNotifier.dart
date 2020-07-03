@@ -107,7 +107,7 @@ class AuthenticationNotifier with ChangeNotifier {
     loading = true;
     try {
       final $response = await UserFirestoreDatabase.updateProfilePicture(
-        userId: userId,
+        userId: accessToken,
         picture: picture,
       );
       if ($response != null) {

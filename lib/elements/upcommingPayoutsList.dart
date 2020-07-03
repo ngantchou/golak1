@@ -23,8 +23,11 @@ class UpcomingPayoutsCards extends StatelessWidget {
     final String _accessToken = authenticationNotifier.accessToken;
     return Container(
         height: 180 + 24.0,
-        child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        child:PageView(
+      controller: PageController(
+      viewportFraction: .92,
+    ),
+    scrollDirection: Axis.horizontal,
       children: <Widget>[
         StreamBuilder(
             stream: PaymentFirestoreDatabase.getUpcomingPayouts(circleId: null,userId: _accessToken),

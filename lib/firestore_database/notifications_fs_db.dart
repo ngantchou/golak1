@@ -36,6 +36,7 @@ class NotificationFirestoreDatabase {
     return Firestore.instance
         .collection(NOTIFICATIONS)
         .where("concern_user",isEqualTo: concernUserId)
+        .orderBy("created_at",descending: true)
         .snapshots()
         .map((QuerySnapshot snapshot) {
       return snapshot.documents.map((doc) {

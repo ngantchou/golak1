@@ -16,6 +16,7 @@ import 'package:golak/store/notifiers/i18nNotifier.dart';
 import 'package:golak/store/notifiers/notificationsNotifier.dart';
 import 'package:provider/provider.dart';
 import 'package:regexed_validator/regexed_validator.dart';
+import 'package:golak/elements/agreement.dart' as fullDialog;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -67,6 +68,15 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 value: authenticationNotifier.rememberMe,
               ),
+              SizedBox(height: 30),
+              GestureDetector(
+                child: Text("By signing up and logging into this app, you are agreeing and acknowledging to Golak's Privacy Policy",
+                  style: TextStyle(color: Colors.blue),
+                ),
+                onTap: () {
+                  _openAgreeDialog(context);
+                },
+              ),
               SizedBox(height: 40),
               RoundedButton(
                   label: FlutterI18n.translate(context, 'submit'),
@@ -78,10 +88,6 @@ class _LoginPageState extends State<LoginPage> {
                           email: _emailController.text,
                           password: _passwordController.text);
                       if (user != null) {
-                        authenticationNotifier.updateOnesignalPlayerId(
-                          userId: user.id,
-                          playerId: notificationsNotifier.playerId,
-                        );
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           '/',
                           (_) => false,
@@ -105,6 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     }
                   }),
+
               SizedBox(height: _phoneHeight * .09),
               InlineButton(
                   leadingLabel:
@@ -124,5 +131,22 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+  Future _openAgreeDialog(context) async {
+    String result = await Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) {
+          return fullDialog.Agreement();
+        },
+        //true to display with a dismiss button rather than a return navigation arrow
+        fullscreenDialog: true));
+    if (result != null) {
+      letsDoSomething(result, context);
+    } else {
+      print('you could do another action here if they cancel');
+    }
+  }
+
+  letsDoSomething(String result, context) {
+    print(result);//prints 'User Agreed'
   }
 }

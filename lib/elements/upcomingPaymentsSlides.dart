@@ -31,10 +31,11 @@ class UpcomingPaymentsSlides extends StatelessWidget {
 
     return Container(
       height: 180 + 24.0,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        //padding: EdgeInsets.only(left: 16),
-        //scrollDirection: Axis.horizontal,
+      child:PageView(
+        controller: PageController(
+          viewportFraction: .92,
+        ),
+        scrollDirection: Axis.horizontal,
         children: <Widget>[
           StreamBuilder(
               stream: PaymentFirestoreDatabase.getUpcomingPayments(circleId: null,userId: _accessToken),

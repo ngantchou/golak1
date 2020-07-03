@@ -29,6 +29,9 @@ dependencies:
   firebase_auth: ^0.10.0
   cloud_firestore: ^0.13.4+2
   flutter_image: 3.0.0
+  flutter_html: 0.11.1
+  webview_flutter: 0.2.0
+  flutter_webview_plugin: 0.3.0+2
 
 
 dev_dependencies:
@@ -92,6 +95,7 @@ flutter:
    - locales/ar.json
 
    - countries/countries.json
+   - web/agreement.html
 
 
   fonts:

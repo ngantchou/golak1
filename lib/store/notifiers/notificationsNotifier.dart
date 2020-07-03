@@ -4,7 +4,7 @@ import 'package:golak/firestore_database/user_fs_db.dart';
 import 'package:golak/models/circle.dart';
 import 'package:golak/models/user.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-
+import 'package:golak/store/notifiers/authenticationNotifier.dart';
 import 'package:golak/models/notification.dart';
 import 'package:golak/network/notifications.dart' as notificationsNetwork;
 import 'package:flutter/foundation.dart';
@@ -122,7 +122,7 @@ class NotificationsNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  initOneSignal() async {
+  initOneSignal(String userId) async {
     OneSignal.shared.init("82d52095-a14d-4827-8d91-19aba6e9c37a");
     OneSignal.shared
         .setInFocusDisplayType(OSNotificationDisplayType.notification);
@@ -133,6 +133,13 @@ class NotificationsNotifier with ChangeNotifier {
 
     final status = await OneSignal.shared.getPermissionSubscriptionState();
     playerId = status.subscriptionStatus.userId;
+
+    final AuthenticationNotifier authenticationNotifier = AuthenticationNotifier();
+    print("want to set playerdID to : $userId");
+    authenticationNotifier.updateOnesignalPlayerId(
+      userId: userId,
+      playerId: playerId,
+    );
   }
 
   static notifyPaymentDone({String circleName,String facilitatorName,String fromUserId}){

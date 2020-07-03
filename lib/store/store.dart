@@ -42,7 +42,7 @@ class Store extends State<StoreProvider> {
   @override
   void initState() {
     super.initState();
-    notificationsNotifier.initOneSignal();
+
 
     initDataSources();
     authenticationNotifier.initDataSources = initDataSources;
@@ -66,6 +66,7 @@ class Store extends State<StoreProvider> {
       accessToken: authenticationNotifier.accessToken,
       userId: authenticationNotifier.user.id,
     );
+    notificationsNotifier.initOneSignal(authenticationNotifier.accessToken);
     await paymentsNotifier.init(
       rememberMe: rememberMe,
       accessToken: authenticationNotifier.accessToken,

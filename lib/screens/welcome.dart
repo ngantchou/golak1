@@ -23,7 +23,7 @@ class _WelcomePageState extends State<WelcomePage> {
     final _phoneHeight = MediaQuery.of(context).size.height;
     final authenticationNotifier = Provider.of<AuthenticationNotifier>(context);
     final i18nNotifier = Provider.of<I18nNotifier>(context);
-   print("access token ${authenticationNotifier.user}");
+   //print("access token ${authenticationNotifier.user}");
     if (navigated &&
         authenticationNotifier.accessToken != null &&
         authenticationNotifier.user != null)

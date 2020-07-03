@@ -10,6 +10,7 @@ import 'package:golak/elements/roundedButton.dart';
 import 'package:golak/elements/roundedTextFormField.dart';
 import 'package:golak/elements/styledAlertDialog.dart';
 import 'package:golak/elements/styledLoader.dart';
+import 'package:golak/elements/agreement.dart' as fullDialog;
 import 'package:golak/models/country.dart';
 import 'package:golak/screens/createCircle.dart';
 import 'package:golak/store/notifiers/authenticationNotifier.dart';
@@ -143,6 +144,15 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                 ],
               ),
+              SizedBox(height: 30),
+              GestureDetector(
+                child: Text("By signing up and logging into this app, you are agreeing and acknowledging to Golak's Privacy Policy",
+                  style: TextStyle(color: Colors.blue),
+                ),
+                onTap: () {
+                  _openAgreeDialog(context);
+                },
+              ),
               SizedBox(height: 40),
               RoundedButton(
                 label: FlutterI18n.translate(context, 'submit'),
@@ -187,7 +197,7 @@ class _SignupPageState extends State<SignupPage> {
                   }
                 },
               ),
-              SizedBox(height: 30),
+
             ],
           ),
           if (Provider.of<AuthenticationNotifier>(context).loading)
@@ -195,5 +205,22 @@ class _SignupPageState extends State<SignupPage> {
         ],
       ),
     );
+  }
+  Future _openAgreeDialog(context) async {
+    String result = await Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) {
+          return fullDialog.Agreement();
+        },
+        //true to display with a dismiss button rather than a return navigation arrow
+        fullscreenDialog: true));
+    if (result != null) {
+      letsDoSomething(result, context);
+    } else {
+      print('you could do another action here if they cancel');
+    }
+  }
+
+  letsDoSomething(String result, context) {
+    print(result);//prints 'User Agreed'
   }
 }
